@@ -1,142 +1,123 @@
-# 🚀 Smart Project & Task Collaboration System (SPTC-System) - Backend
+# Task Management Backend
 
-A fully scalable, production-ready modular backend built with **Node.js**, **Express**, **TypeScript**, and **Prisma ORM** with **MongoDB**.
-
-## 🌐 Live URL
-- **Production API URL:** [https://sptc-system-backend.vercel.app](https://sptc-system-backend.vercel.app)
-- **Base Endpoint:** `https://sptc-system-backend.vercel.app/api/v1`
+A fully scalable, production-ready backend system built with **Node.js**, **Express**, and **TypeScript** using a **clean modular architecture**. This system uses **Prisma** with MongoDB for database management, **JWT** for authentication, and integrates with **Cloudinary** for media storage and **Nodemailer** for email services.
 
 ---
 
-## 🛠️ Technology Stack
-- **Core Platform:** Node.js (v18+) & Express
-- **Language:** TypeScript
-- **Database & ORM:** MongoDB Atlas + Prisma ORM
-- **Authentication:** JSON Web Tokens (JWT) + BcryptJS
-- **Hosting Platform:** Vercel
+## 🚀 Technologies Used
+- **Node.js & Express.js**: Core server framework.
+- **TypeScript**: Static typing for robust code.
+- **Prisma & MongoDB**: ORM and NoSQL database.
+- **JWT (JSON Web Tokens)**: Secure authentication and authorization.
+- **Cloudinary**: Cloud-based image and file management.
+- **Nodemailer**: Email sending functionality.
+- **Zod**: Schema validation.
+- **Socket.io**: Real-time communication (optional depending on modules).
 
 ---
 
-## ✨ Features
-1. **Authentication & RBAC:**
-   - Email & Password Signup & Login.
-   - Secure token handling via HTTP headers (`Bearer {{token}}`).
-   - Role-Based Access Control: `ADMIN`, `PROJECT_MANAGER`, and `TEAM_MEMBER`.
-2. **Project Management:**
-   - Create, retrieve, update, and delete projects.
-   - Project memberships: Only members assigned to a project can collaborate on its tasks.
-   - Cascade delete: Deleting a project automatically deletes all related tasks.
-3. **Task Management (With Strict Validations):**
-   - No duplicate task titles allowed within the same project.
-   - Due dates cannot be set to a past date.
-   - Tasks can only be assigned to users who are members of the corresponding project.
-   - Completed tasks cannot be re-assigned.
-   - **Role restrictions:** Team members can only update the `status` of tasks assigned to them, while Admins & Project Managers have full edit access.
-4. **Activity Logs:**
-   - Automatically records audit trails for project modifications, task creation, and member assignments.
-5. **Dashboard Insights:**
-   - Aggregated KPIs for total, pending, and completed projects/tasks.
-   - Real-time work progress overview and member workload distribution.
+## 📂 Code Structure
 
----
+The project follows a highly modular architecture for better maintainability and scalability.
 
-## 📁 Project Architecture
-The project follows a clean **modular architecture** design:
 ```text
 src/
-├── app/
-│   ├── config/             # Environment configurations
-│   ├── errors/             # Global error classes
-│   ├── middlewares/        # Authentication and error handling middlewares
-│   ├── modules/            # Domain-driven modules (auth, project, task, activityLog, user, dashboard)
-│   │   ├── auth/           # Route, Controller, Service, Validation
-│   │   ├── project/
-│   │   ├── task/
-│   │   ├── activityLog/
-│   │   └── dashboard/
-│   └── routes/             # Centralized routing registry
-├── prisma/
-│   ├── schema.prisma       # Database schemas
-│   └── enum.prisma         # Centralized Prisma database enums
-├── app.ts                  # Express application setup
-└── server.ts               # Server bootstrapping and DB seeding
+├── app.ts                 # Express app setup and middleware configuration
+├── server.ts              # Entry point to start the server
+└── app/
+    ├── config/            # Environment variables and configuration loaders
+    ├── errors/            # Global error handling and custom error classes
+    ├── middlewares/       # Express middlewares (auth, validation, etc.)
+    ├── modules/           # Domain-driven modules (e.g., users, tasks, projects)
+    │   └── [moduleName]/  # Each module has its own controller, service, route, and interface
+    ├── prisma/            # Prisma client instantiation
+    ├── routes/            # Centralized API route definitions
+    └── utils/             # Helper functions and utilities
 ```
 
 ---
 
-## 🚀 How to Run Locally
+## ⚙️ Environment Variables (`.env`)
 
-### 1. Clone & Install Dependencies
-```bash
-git clone https://github.com/nayeem-miah/sptc-system-backend.git
-cd sptc-system-backend
-npm install
-```
+Create a `.env` file in the root directory based on the following example:
 
-### 2. Configure Environment Variables
-Create a `.env` file in the root directory and configure the following variables:
 ```env
+# Server Configuration
 PORT=8321
-DATABASE_URL="your-mongodb-atlas-connection-string"
 NODE_ENV=development
 
-# JWT Secret Keys
-JWT_ACCESS_SECRET="your-jwt-access-token-secret"
-JWT_REFRESH_SECRET="your-jwt-refresh-token-secret"
+# Database Configuration
+DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.mongodb.net/database_name?retryWrites=true&w=majority"
+
+# JWT Secrets
+JWT_ACCESS_SECRET="your_super_secret_access_key"
+JWT_REFRESH_SECRET="your_super_secret_refresh_key"
 JWT_ACCESS_EXPIRES_IN=5d
 JWT_REFRESH_EXPIRES_IN=30d
 
 # Password Hashing
 SALT_ROUNDS=12
+
+# Cloudinary Integration (for file uploads)
+CLOUDINARY_CLOUD_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_api_key"
+CLOUDINARY_API_SECRET="your_api_secret"
+
+# Email Configuration (Nodemailer)
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT="587"
+EMAIL_USER="your_email@gmail.com"
+EMAIL_PASS="your_app_password"
+EMAIL_FROM="your_email@gmail.com"
+
+# Frontend URLs for Redirects (e.g., Payment or Auth callbacks)
+FRONTEND_SUCCESS_URL="http://localhost:3000/dashboard"
+FRONTEND_FAIL_URL="http://localhost:3000/login"
+FRONTEND_CANCEL_URL="http://localhost:3000/login"
+
+# Initial Admin Credentials (for seeding or default auth)
+ADMIN_EMAIL="admin@gmail.com"
+ADMIN_PASSWORD="securepassword"
+
+# Password Reset URL
+RESET_PASS_LINK="http://localhost:3000/reset-password"
 ```
 
-### 3. Generate Database Client & Seed DB
-Run the Prisma generate command and start the server. The server automatically seeds initial accounts for testing:
-- **Admin:** `admin@gmail.com` (Password: `123456`)
-- **Project Manager:** `pm@gmail.com` (Password: `123456`)
-- **Team Member:** `member@gmail.com` (Password: `123456`)
+---
 
+## 🛠️ How to Use (Local Setup)
+
+### 1. Install Dependencies
+Make sure you have Node.js installed, then run:
 ```bash
-npx prisma generate
+npm install
+```
+
+### 2. Configure Environment Variables
+Copy the `.env` example above and put it in a `.env` file in the root of the project. Make sure to replace the dummy values with your actual database and API credentials.
+
+### 3. Generate Prisma Client
+Since the project uses Prisma with MongoDB, generate the Prisma client:
+```bash
+npm run postinstall
+# or directly: npx prisma generate
+```
+
+### 4. Run the Development Server
+Start the server in development mode (with auto-reload using `ts-node-dev`):
+```bash
 npm run dev
 ```
 
----
+The server should now be running at `http://localhost:8321` (or your defined `PORT`).
 
-## 📡 API Endpoint Reference
+### 5. Build for Production
+To build the TypeScript files into JavaScript:
+```bash
+npm run build
+```
 
-### 🔐 Authentication Module
-| Endpoint | Method | Role Allowed | Description |
-| :--- | :--- | :--- | :--- |
-| `/auth/register` | `POST` | Public | Register a new user |
-| `/auth/login` | `POST` | Public | Log in and receive JWT token |
-
-### 📁 Project Module
-| Endpoint | Method | Role Allowed | Description |
-| :--- | :--- | :--- | :--- |
-| `/projects` | `POST` | `ADMIN`, `PROJECT_MANAGER` | Create a new project |
-| `/projects` | `GET` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Get projects list (with filter/search) |
-| `/projects/:id` | `GET` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Get single project by ID |
-| `/projects/:id` | `PATCH` | `ADMIN`, `PROJECT_MANAGER` | Update project details |
-| `/projects/:id` | `DELETE` | `ADMIN`, `PROJECT_MANAGER` | Delete project (cascades tasks) |
-
-### 📝 Task Module
-| Endpoint | Method | Role Allowed | Description |
-| :--- | :--- | :--- | :--- |
-| `/tasks` | `POST` | `ADMIN`, `PROJECT_MANAGER` | Create and assign a task |
-| `/tasks` | `GET` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Get all tasks (with filters & search) |
-| `/tasks/:id` | `GET` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Get single task details |
-| `/tasks/:id` | `PATCH` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Update task details (Team member can update status only) |
-| `/tasks/:id` | `DELETE` | `ADMIN`, `PROJECT_MANAGER` | Delete task |
-
-### 📊 Dashboard & Activity Modules
-| Endpoint | Method | Role Allowed | Description |
-| :--- | :--- | :--- | :--- |
-| `/dashboard/insights` | `GET` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Get analytics KPIs and workload distribution |
-| `/activities` | `GET` | `ADMIN`, `PROJECT_MANAGER`, `TEAM_MEMBER` | Get recent audit trail logs |
-
----
-
-## 🧪 Postman Collection
-The API collection containing predefined environment variables and requests for testing all flows is stored at:
-- **File Path:** [backend-api.postman_collection.json](backend-api.postman_collection.json)
+Then start the compiled code:
+```bash
+npm run start
+```
