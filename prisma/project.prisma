@@ -1,0 +1,18 @@
+model Project {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  deadline    DateTime
+  status      ProjectStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Many-to-Many relationship
+  memberIds   String[]      @db.ObjectId
+  members     User[]        @relation(fields: [memberIds], references: [id])
+
+  // One-to-Many relationship
+  tasks       Task[]
+
+  @@map("projects")
+}

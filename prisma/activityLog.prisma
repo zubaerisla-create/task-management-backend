@@ -1,0 +1,7 @@
+model ActivityLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}
