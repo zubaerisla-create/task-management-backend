@@ -3,7 +3,8 @@ import ApiError from "../../errors/apiError";
 import { prisma } from "../../prisma/prisma";
 import { PrismaQueryBuilder } from "../../utils/QueryBuilder";
 import { ActivityLogService } from "../activityLog/activityLog.service";
-
+import emailSender from "../../utils/emailSender";
+import { getTaskAssignmentEmailTemplate } from "../../utils/emailTemplates";
 const createTask = async (payload: {
   title: string;
   description: string;
@@ -84,6 +85,19 @@ const createTask = async (payload: {
   await ActivityLogService.createLog(`Task "${title}" created under project "${project.name}"`);
   if (assignedMemberId) {
     await ActivityLogService.createLog(`Task "${title}" assigned to ${memberName}`);
+    
+    // Send email notification to the assigned member
+    if (result.assignedMember?.email) {
+      const emailHtml = getTaskAssignmentEmailTemplate(
+        memberName,
+        result.title,
+        project.name,
+        result.dueDate.toISOString(),
+        result.priority
+      );
+      // Send asynchronously without blocking the API
+      emailSender(`New Task: ${result.title}`, result.assignedMember.email, emailHtml).catch(console.error);
+    }
   }
 
   return result;
