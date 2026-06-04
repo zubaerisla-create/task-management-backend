@@ -4,6 +4,7 @@ import express, { Application, Request, Response } from "express";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
 import router from "./app/routes";
+import { seedAdmin } from "./app/utils/seedAdmin";
 
 const app: Application = express();
 
@@ -38,6 +39,11 @@ app.get("/", (req: Request, res: Response) => {
 app.set("trust proxy", 1);
 
 app.use("/api/v1", router);
+
+// Seed default users (admin, pm, member) if they don't exist
+seedAdmin().catch((err) => {
+  console.error("Error seeding default users:", err);
+});
 
 app.use(notFound);
 app.use(globalErrorHandler);
